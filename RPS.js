@@ -1,3 +1,10 @@
+let computerScore = 0;
+let humanScore = 0;
+const yourScore = document.querySelector('#yourScore');
+const CPUScore = document.querySelector('#CPUScore');
+const buttons = document.querySelector(".buttons");
+const select = document.querySelector(".select");
+
 function getComputerChoice() {
     const rand = Math.random();
     if (rand < 1/3) {
@@ -10,20 +17,35 @@ function getComputerChoice() {
         return 'scissors';
     }
 }
-function getHumanChoice() {
-     
-    let choice = prompt("Choose Rock, Paper, or Scissors!");
-    let valid_choices = ["rock", "paper", "scissors"]
-    while (!valid_choices.includes(choice.toLowerCase())) {
-        choice = prompt("Please choose Rock, Paper, or Scissors!");
+function getHumanChoice(e) {
+    switch (e.target.className) {
+        case 'rock':
+            return 'rock';
+            break;
+        case 'paper':
+            return 'paper'
     }
-    return choice.toLowerCase();
+
+    return 'scissors';
 }
 
-function playRound(humanChoice, computerChoice) {
+function playRound(e) {
+
+    if (humanScore >= 5) {
+        select.textContent = "You win!";
+        return;
+    }
+    else if (computerScore >= 5) {
+        select.textContent = "You lose!";
+        return;
+    }
+
+
+    let humanChoice = getHumanChoice(e);
+    let computerChoice = getComputerChoice();
+
     if (humanChoice == computerChoice) {
         console.log(`Tie!: ${humanChoice} ties ${computerChoice}`);
-        return 0;
     }
 
     if (humanChoice == "paper" && computerChoice == "scissors" ||
@@ -31,39 +53,14 @@ function playRound(humanChoice, computerChoice) {
         humanChoice == "scissors" && computerChoice == "rock"
     ) {
         console.log(`You lose! ${computerChoice} beats ${humanChoice}`);
-        return -1;
+        computerScore++;
+        CPUScore.textContent = `Computer : ${computerScore}`;
     }
     else {
         console.log(`You win! ${humanChoice} beats ${computerChoice}!`);
-        return 1;
+        humanScore++;
+        yourScore.textContent = `You : ${humanScore}`;
     }
+
 }
-
-function playGame() {
-    let computerScore = 0;
-    let humanScore = 0;
-    let roundNumber = 1;
-    let score = 0;
-
-    while (roundNumber <= 5) {
-        console.log(`The current score is\nYou: ${humanScore}\nOpponent Score:${computerScore}`);
-        score = playRound(getHumanChoice(), getComputerChoice());
-        
-        if (score == 0) continue;
-        else if (score == 1) humanScore++;
-        else computerScore++;
-
-        if (humanScore == 3) {
-            console.log("You win the game!");
-            break;
-        }
-        else if (computerScore == 3) {
-            console.log("You lose the game :(");
-            break;
-        }
-
-        roundNumber++;
-    }
-}
-
-playGame();
+buttons.addEventListener('click', playRound);
